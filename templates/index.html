@@ -9,7 +9,7 @@
   <body class="bg-gray-100 flex items-center justify-center min-h-screen">
     <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
       <div class="flex justify-center mb-6">
-        <img src="{{ url_for('static', filename='pk.png') }}" alt="Header Image" class="h-24 w-24 object-contain">
+        <img src="{{ url_for('static', filename='pk.png') }}" alt="Header Image" class="object-contain">
       </div>
       <h1 class="text-2xl font-bold mb-6 text-gray-700 text-center">Upload CSV File</h1>
       <form method="post" enctype="multipart/form-data" action="/upload" class="space-y-4">
