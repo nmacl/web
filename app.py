@@ -6,6 +6,10 @@ import io
 app = Flask(__name__)
 
 def update_features_v3(df):
+    # Ensure feature columns are of type object
+    for i in range(1, 11):
+        df[f'Feature{i}'] = df[f'Feature{i}'].astype(object)
+    
     for index, row in df.iterrows():
         description = row['Description']
 
