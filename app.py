@@ -1,13 +1,9 @@
 from flask import Flask, request, redirect, url_for, send_file, render_template
 import pandas as pd
 import re
-import os
+import io
 
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = 'uploads'
-
-if not os.path.exists(app.config['UPLOAD_FOLDER']):
-    os.makedirs(app.config['UPLOAD_FOLDER'])
 
 def update_features_v3(df):
     for index, row in df.iterrows():
@@ -48,13 +44,12 @@ def upload_file():
         return redirect(url_for('index'))
 
     if file:
-        file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
-        file.save(file_path)
-        data = pd.read_csv(file_path)
+        data = pd.read_csv(file)
         updated_data = update_features_v3(data)
-        output_file_path = os.path.join(app.config['UPLOAD_FOLDER'], 'updated.csv')
-        updated_data.to_csv(output_file_path, index=False)
-        return send_file(output_file_path, as_attachment=True)
+        output = io.BytesIO()
+        updated_data.to_csv(output, index=False)
+        output.seek(0)
+        return send_file(output, mimetype='text/csv', as_attachment=True, attachment_filename='nike_updated.csv')
 
 if __name__ == '__main__':
     app.run(debug=True)

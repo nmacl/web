@@ -3,16 +3,15 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>PK Web</title>
+    <title>Upload CSV</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   </head>
   <body class="bg-gray-100 flex items-center justify-center min-h-screen">
     <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
       <div class="flex justify-center mb-6">
-        <img src="{{ url_for('static', filename='pk.png') }}" alt="Header Image" class="object-contain">
+        <img src="{{ url_for('static', filename='images/pk.png') }}" alt="Header Image" class="h-24 w-24 object-contain">
       </div>
-      <h1 class="text-2xl font-bold mb-6 text-gray-700 text-center">Upload CSV File 
-      </h1>
+      <h1 class="text-2xl font-bold mb-6 text-gray-700 text-center">Upload CSV File</h1>
       <form method="post" enctype="multipart/form-data" action="/upload" class="space-y-4">
         <div>
           <label for="file" class="block text-sm font-medium text-gray-700">Choose CSV file</label>
