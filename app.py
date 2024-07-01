@@ -48,13 +48,20 @@ def upload_file():
         return redirect(url_for('index'))
 
     if file:
+        data = None
         try:
+            # Try reading with utf-8 encoding
             data = pd.read_csv(file, encoding='utf-8')
         except UnicodeDecodeError:
             try:
+                # Fallback to ISO-8859-1 encoding
+                file.seek(0)  # Reset file pointer to the beginning
                 data = pd.read_csv(file, encoding='ISO-8859-1')
             except Exception as e:
-                return f"Failed to read the file: {str(e)}", 400
+                return f"Failed to read the file with both utf-8 and ISO-8859-1 encodings: {str(e)}", 400
+
+        if data is None or data.empty:
+            return "Failed to read the file: No columns to parse from file", 400
 
         try:
             updated_data = update_features_v3(data)
