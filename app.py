@@ -48,7 +48,8 @@ def upload_file():
         return redirect(url_for('index'))
 
     if file:
-        data = pd.read_csv(file, encoding='utf-8', errors='ignore')
+        content = file.read().decode('utf-8', errors='ignore')
+        data = pd.read_csv(io.StringIO(content))
         updated_data = update_features_v3(data)
         output = io.BytesIO()
         updated_data.to_csv(output, index=False)
