@@ -48,12 +48,22 @@ def upload_file():
         return redirect(url_for('index'))
 
     if file:
-        data = pd.read_csv(file)
-        updated_data = update_features_v3(data)
-        output = io.BytesIO()
-        updated_data.to_csv(output, index=False)
-        output.seek(0)
-        return send_file(output, mimetype='text/csv', as_attachment=True, download_name='nike_updated.csv')
+        try:
+            data = pd.read_csv(file, encoding='utf-8')
+        except UnicodeDecodeError:
+            try:
+                data = pd.read_csv(file, encoding='ISO-8859-1')
+            except Exception as e:
+                return f"Failed to read the file: {str(e)}", 400
+
+        try:
+            updated_data = update_features_v3(data)
+            output = io.BytesIO()
+            updated_data.to_csv(output, index=False)
+            output.seek(0)
+            return send_file(output, mimetype='text/csv', as_attachment=True, download_name='nike_updated.csv')
+        except Exception as e:
+            return f"An error occurred while processing the file: {str(e)}", 500
 
 if __name__ == '__main__':
     app.run(debug=True)
