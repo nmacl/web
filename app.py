@@ -54,7 +54,7 @@ def upload_file():
         output = io.BytesIO()
         updated_data.to_csv(output, index=False)
         output.seek(0)
-        return send_file(output, mimetype='text/csv', as_attachment=True, download_name='nike_updated.csv')
+        return send_file(output, mimetype='text/csv', as_attachment=True, download_name='updated.csv')
 
 if __name__ == '__main__':
     app.run(debug=True)
