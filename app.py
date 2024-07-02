@@ -6,33 +6,41 @@ import io
 app = Flask(__name__)
 
 def update_features_v3(df):
-    # Ensure feature columns are of type object
+    # Ensure feature columns are of type object and initialize UpdateDescription column
     for i in range(1, 11):
         df[f'Feature{i}'] = df[f'Feature{i}'].astype(object)
+    df['UpdateDescription'] = df['Description'].astype(object)
     
     for index, row in df.iterrows():
         description = row['Description']
 
         if pd.notna(description):
-            description = description.replace("Features:", "")
-            sentences = re.split(r'(?<!\d)\. ?', description)
-            feature_columns = ["<strong>Features:</strong>"]
-            feature_index = 2
+            # Split the description into parts before and after "Features:"
+            parts = re.split(r'Features:', description, maxsplit=1)
+            if len(parts) > 1:
+                df.at[index, 'UpdateDescription'] = parts[0].strip()
+                features_text = parts[1].strip()
+                sentences = re.split(r'(?<!\d)\. ?', features_text)
+                feature_columns = ["<strong>Features:</strong>"]
+                feature_index = 2
 
-            percent_sentence_found = False
-            for sentence in sentences:
-                if '%' in sentence and not percent_sentence_found:
-                    feature_columns.append(sentence.strip() + '.')
-                    percent_sentence_found = True
-                else:
-                    stripped_sentence = sentence.strip() + '.'
-                    if len(stripped_sentence) > 4 and feature_index <= 10:
-                        feature_columns.append(stripped_sentence)
-                        feature_index += 1
+                percent_sentence_found = False
+                for sentence in sentences:
+                    if '%' in sentence and not percent_sentence_found:
+                        feature_columns.append(sentence.strip() + '.')
+                        percent_sentence_found = True
+                    else:
+                        stripped_sentence = sentence.strip() + '.'
+                        if len(stripped_sentence) > 4 and feature_index <= 10:
+                            feature_columns.append(stripped_sentence)
+                            feature_index += 1
 
-            for i, feature in enumerate(feature_columns):
-                df.at[index, f'Feature{i+1}'] = str(feature)
+                for i, feature in enumerate(feature_columns):
+                    df.at[index, f'Feature{i+1}'] = str(feature)
+            else:
+                df.at[index, 'UpdateDescription'] = description.strip()
     return df
+
 
 @app.route('/')
 def index():
