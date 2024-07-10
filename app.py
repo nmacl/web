@@ -21,8 +21,8 @@ def update_features_v3(df):
                 df.at[index, 'UpdateDescription'] = parts[0].strip()
                 features_text = parts[1].strip()
                 sentences = re.split(r'(?<!\d)\. ?', features_text)
-                feature_columns = ["<strong>Features:</strong>"]
-                feature_index = 2
+                feature_columns = []
+                feature_index = 1
 
                 percent_sentence_found = False
                 for sentence in sentences:
@@ -40,7 +40,6 @@ def update_features_v3(df):
             else:
                 df.at[index, 'UpdateDescription'] = description.strip()
     return df
-
 
 @app.route('/')
 def index():
