@@ -41,6 +41,35 @@ def update_features_v3(df):
                 df.at[index, 'UpdateDescription'] = description.strip()
     return df
 
+def update_benefits(df):
+    # Ensure benefit columns are of type object
+    for i in range(1, 11):
+        df[f'Benefit{i}'] = df[f'Benefit{i}'].astype(object)
+    
+    for index, row in df.iterrows():
+        description = row['Description']
+
+        if pd.notna(description):
+            # Process only the Benefits section
+            benefit_parts = re.split(r'Benefits:', description, maxsplit=1)
+
+            if len(benefit_parts) > 1:
+                benefits_text = benefit_parts[1].strip()
+                benefit_sentences = re.split(r'(?<!\d)\. ?', benefits_text)
+                
+                benefit_columns = []
+                benefit_index = 1
+                for sentence in benefit_sentences:
+                    stripped_sentence = sentence.strip() + '.'
+                    if len(stripped_sentence) > 4 and benefit_index <= 10:
+                        benefit_columns.append(stripped_sentence)
+                        benefit_index += 1
+
+                for i, benefit in enumerate(benefit_columns):
+                    df.at[index, f'Benefit{i+1}'] = str(benefit)
+
+    return df
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -57,7 +86,8 @@ def upload_file():
     if file:
         content = file.read().decode('utf-8', errors='ignore')
         data = pd.read_csv(io.StringIO(content))
-        updated_data = update_features_v3(data)
+        updated_data = update_features_v3(data)  # Process Features first
+        updated_data = update_benefits(updated_data)  # Then process Benefits
         output = io.BytesIO()
         updated_data.to_csv(output, index=False)
         output.seek(0)
